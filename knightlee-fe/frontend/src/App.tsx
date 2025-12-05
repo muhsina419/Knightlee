@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 // pages
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
+import Home from "./pages/Home"
 
 export default function App() {
   return (
@@ -17,11 +18,8 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
 
         {/* Additional pages */}
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/home" element={<Home />} />
 
-        {/* Optional */}
-        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Fallback if no route match */}
         <Route path="*" element={<h1 className="text-center pt-10 text-xl">404 — Page Not Found</h1>} />

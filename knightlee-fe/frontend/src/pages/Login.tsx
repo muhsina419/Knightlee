@@ -1,122 +1,166 @@
 import React, { useState } from "react"
-import { Link } from "react-router-dom"
-import { Eye, EyeOff } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import Navbar from "../components/Navbar"
 
-export default function LoginPage() {
+export default function Login() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    console.log("Login attempt:", formData)
-    setIsLoading(false)
+    // TODO: Implement login logic
+    console.log("Login attempt:", { email, password })
+    navigate("/")
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="mb-8">
-          <Link to="/" className="inline-block">
-            <h1 className="text-3xl font-bold text-gray-900">KnightLee</h1>
-          </Link>
-          <p className="text-gray-600 mt-2">Welcome back! Log in to your account</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-[#CCF5E9] to-[#E9FFF7]">
+      <Navbar />
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-900 mb-2">
-              Username
-            </label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              required
-              value={formData.username}
-              onChange={handleInputChange}
-              placeholder="Enter your username"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition"
-            />
+      <div className="flex items-center justify-center min-h-[calc(100vh-100px)] px-6 py-10">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
+          {/* Logo Section */}
+          <div className="flex justify-center mb-6">
+            <div className="w-16 h-16 bg-[#08a870] rounded-2xl flex items-center justify-center shadow-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="white"
+                className="w-9 h-9"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 3l7 4v5c0 5-3.5 9-7 9s-7-4-7-9V7l7-4z"
+                />
+              </svg>
+            </div>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-900">
+          {/* Title */}
+          <h1 className="text-4xl font-extrabold text-gray-900 text-center">
+            Welcome Back
+          </h1>
+          <p className="text-gray-600 text-center mt-2">
+            Sign in to your Knightlee account
+          </p>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            {/* Email Input */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#009c6a] focus:ring-2 focus:ring-[#CCF5E9] transition-all"
+                required
+              />
+            </div>
+
+            {/* Password Input */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
                 Password
               </label>
-              <Link to="/forgot-password" className="text-xs text-[#10B981] hover:text-[#059669]">
-                Forgot password?
-              </Link>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#009c6a] focus:ring-2 focus:ring-[#CCF5E9] transition-all"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-3 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="Enter your password"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
+
+            {/* Forgot Password Link */}
+            <div className="text-right">
+              <a href="#" className="text-sm font-medium text-[#009c6a] hover:text-[#008458]">
+                Forgot password?
+              </a>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full bg-[#009c6a] text-white py-3 rounded-xl font-semibold text-lg hover:bg-[#008458] transition-all shadow-lg"
+            >
+              Sign In
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="mt-8 relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or</span>
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full px-4 py-2 bg-[#10B981] text-white rounded-lg font-medium hover:bg-[#059669] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Logging in..." : "Log In"}
-          </button>
-        </form>
-
-        <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-gray-300"></div>
-          <span className="px-3 text-sm text-gray-500">Don't have an account?</span>
-          <div className="flex-1 border-t border-gray-300"></div>
+          {/* Sign Up Link */}
+          <p className="text-center mt-8 text-gray-600">
+            Don't have an account?{" "}
+            <Link to="/signup" className="font-semibold text-[#009c6a] hover:text-[#008458]">
+              Sign up here
+            </Link>
+          </p>
         </div>
-
-        <Link to="/signup" className="block text-center">
-          <button className="w-full px-4 py-2 border border-[#10B981] text-[#10B981] rounded-lg font-medium hover:bg-green-50 transition-colors">
-            Create New Account
-          </button>
-        </Link>
-
-        <p className="text-center text-xs text-gray-500 mt-8">
-          By logging in, you agree to our{" "}
-          <Link to="/terms" className="text-[#10B981] hover:underline">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link to="/privacy" className="text-[#10B981] hover:underline">
-            Privacy Policy
-          </Link>
-        </p>
       </div>
     </div>
   )
