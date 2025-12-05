@@ -1,6 +1,7 @@
 # api/urls.py
 from django.urls import path
 from . import views
+from .views import crime_heatmap_geojson 
 from .views import (
     crime_geojson,
     blackspot_geojson,  # if you added this too
@@ -27,6 +28,8 @@ urlpatterns = [
     path("crimes/geojson/", crime_geojson),
     path("blackspots/geojson/", blackspot_geojson),
     path("blackspots/", views.blackspot_list, name="blackspot_list"),
+    path("crime-heatmap/", crime_heatmap_geojson, name="crime-heatmap"),
+     path("blackspots-route/", views.blackspots_along_route, name="blackspots-route"),
 
 
 ]

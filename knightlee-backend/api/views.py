@@ -218,3 +218,185 @@ def blackspot_list(request):
     blackspots = BlackSpot.objects.all()
     serializer = BlackSpotSerializer(blackspots, many=True)
     return Response(serializer.data)
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import CrimeHeatData
+
+@api_view(["GET"])
+def crime_heatmap_geojson(request):
+    features = []
+
+    for obj in CrimeHeatData.objects.all():
+        features.append({
+            "type": "Feature",
+            "properties": {
+                "city": obj.city,
+                "crime_description": obj.crime_description,
+                "crime_domain": obj.crime_domain,
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [obj.longitude, obj.latitude],  # [lng, lat]
+            },
+        })
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": features,
+    }
+    return Response(geojson)
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import CrimeHeatData
+
+
+@api_view(["GET"])
+def crime_heatmap_geojson(request):
+    features = []
+
+    for obj in CrimeHeatData.objects.all():
+        features.append({
+            "type": "Feature",
+            "properties": {
+                "city": obj.city,
+                "crime_description": obj.crime_description,
+                "crime_domain": obj.crime_domain,
+                "victim_age": obj.victim_age,
+                "weapon_used": obj.weapon_used,
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [obj.longitude, obj.latitude],  # [lng, lat]
+            },
+        })
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": features,
+    }
+
+    return Response(geojson)
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import CrimeHeatData
+
+
+@api_view(["GET"])
+def crime_heatmap_geojson(request):
+    features = []
+
+    for obj in CrimeHeatData.objects.all():
+        features.append({
+            "type": "Feature",
+            "properties": {
+                "city": obj.city,
+                "crime_description": obj.crime_description,
+                "crime_domain": obj.crime_domain,
+                "victim_age": obj.victim_age,
+                "weapon_used": obj.weapon_used,
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [obj.longitude, obj.latitude],  # [lng, lat]
+            },
+        })
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": features,
+    }
+
+    return Response(geojson)
+@api_view(["GET"])
+def blackspots_along_route(request):
+    """
+    GET /api/blackspots-route/?start_lng=..&start_lat=..&end_lng=..&end_lat=..&buffer_km=1
+
+    Returns:
+    {
+      "summary": {
+        "route_distance_km": ...,
+        "total_blackspots": ...,
+        "avg_severity": ...,
+        "max_severity": ...,
+        "min_distance_km": ...,
+        "buffer_km": ...,
+        "safety_percentage": ...
+      },
+      "geojson": { FeatureCollection of blackspots along route }
+    }
+    """
+    try:
+        start_lng = float(request.query_params.get("start_lng"))
+        start_lat = float(request.query_params.get("start_lat"))
+        end_lng = float(request.query_params.get("end_lng"))
+        end_lat = float(request.query_params.get("end_lat"))
+        buffer_km = float(request.query_params.get("buffer_km", 1.0))
+    except (TypeError, ValueError):
+        return Response({"detail": "Invalid or missing route coordinates"}, status=400)
+
+    route_distance_km = haversine_km(start_lat, start_lng, end_lat, end_lng)
+
+    features = []
+    severities = []
+    min_distance = None
+
+    for spot in BlackSpot.objects.all():
+        d = point_segment_distance_km(
+            spot.longitude, spot.latitude,
+            start_lng, start_lat,
+            end_lng, end_lat,
+        )
+
+        if d <= buffer_km:
+            severities.append(spot.severity)
+            if min_distance is None or d < min_distance:
+                min_distance = d
+
+            features.append({
+                "type": "Feature",
+                "properties": {
+                    "id": spot.id,
+                    "name": spot.name,
+                    "severity": spot.severity,
+                    "distance_km": round(d, 3),
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [spot.longitude, spot.latitude],
+                },
+            })
+
+    total_blackspots = len(features)
+    avg_severity = sum(severities) / total_blackspots if total_blackspots > 0 else 0
+    max_severity = max(severities) if severities else 0
+
+    # Simple risk -> safety calculation:
+    # risk_per_km = (sum severity) / route_distance, clamp to [0, 1]
+    if route_distance_km > 0 and total_blackspots > 0:
+        total_severity = sum(severities)
+        risk_per_km = total_severity / max(route_distance_km, 0.1)
+        normalized_risk = min(risk_per_km / 3.0, 1.0)  # 3 severity/km = very risky
+        safety_percentage = round((1.0 - normalized_risk) * 100)
+    else:
+        safety_percentage = 100  # no blackspots → fully safe
+
+    summary = {
+        "route_distance_km": round(route_distance_km, 2),
+        "total_blackspots": total_blackspots,
+        "avg_severity": round(avg_severity, 2),
+        "max_severity": max_severity,
+        "min_distance_km": round(min_distance, 2) if min_distance is not None else None,
+        "buffer_km": buffer_km,
+        "safety_percentage": safety_percentage,
+    }
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": features,
+    }
+
+    return Response({
+        "summary": summary,
+        "geojson": geojson,
+    })
