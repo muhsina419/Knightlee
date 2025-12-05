@@ -34,3 +34,10 @@ class SOSSerializer(serializers.ModelSerializer):
         model = SOSAlert
         fields = ("id","user","latitude","longitude","timestamp")
         read_only_fields = ("user","timestamp")
+from rest_framework import serializers
+from .models import BlackSpot
+
+class BlackSpotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlackSpot
+        fields = '__all__'

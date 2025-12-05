@@ -26,6 +26,8 @@ urlpatterns = [
     path("incidents/geojson/", views.incidents_geojson, name="incidents_geojson"),
     path("crimes/geojson/", crime_geojson),
     path("blackspots/geojson/", blackspot_geojson),
+    path("blackspots/", views.blackspot_list, name="blackspot_list"),
+
 
 ]
 

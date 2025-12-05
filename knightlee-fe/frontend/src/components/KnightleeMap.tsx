@@ -1,8 +1,9 @@
 // import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import api from "../api/client";
+import React, { useEffect, useRef, useState } from "react";
 
-mapboxgl.accessToken = "YOUR_MAPBOX_TOKEN"; // REQUIRED
+mapboxgl.accessToken = "pk.eyJ1IjoiYWJoaWFiaGluYW5kYW5hMDkiLCJhIjoiY21pc3E3Y3ZrMDB0NTNmc2J6Z2RhZXI4NyJ9.nsB4sflxG_e3KK2DYWwpqg"; // REQUIRED
 
 type RouteInfo = {
   id: "fastest" | "safest";
@@ -48,30 +49,71 @@ const KnightleeMap: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
     mapRef.current = map;
 
-    map.on("load", async () => {
-      try {
-        const res = await api.get("/incidents/geojson/");
-        map.addSource("incident-points", { type: "geojson", data: res.data });
-
-        map.addLayer({
-          id: "incident-heat",
-          type: "heatmap",
-          source: "incident-points",
-          maxzoom: 16,
-          paint: {
-            "heatmap-weight": ["+", 1, ["get", "upvotes"]],
-            "heatmap-radius": 25,
-            "heatmap-opacity": 0.8,
-          },
-        });
-
-        setInfoMsg(
-          "Heatmap shows high-risk zones. Right-click to report incident."
-        );
-      } catch {
-        setInfoMsg("Could not load incidents heatmap.");
-      }
+   map.on("load", async () => {
+  try {
+    // 🔥 INCIDENT HEATMAP
+    const incidentsRes = await api.get("/incidents/geojson/");
+    map.addSource("incident-points", {
+      type: "geojson",
+      data: incidentsRes.data,
     });
+
+    map.addLayer({
+      id: "incident-heat",
+      type: "heatmap",
+      source: "incident-points",
+      maxzoom: 16,
+      paint: {
+        "heatmap-weight": ["+", 1, ["get", "upvotes"]],
+        "heatmap-radius": 25,
+        "heatmap-opacity": 0.8,
+      },
+    });
+
+    // ⚠️ BLACKSPOTS POINT MARKERS
+    const blackspotsRes = await api.get("/blackspots/geojson/");
+    map.addSource("blackspots", {
+      type: "geojson",
+      data: blackspotsRes.data,
+    });
+
+    map.addLayer({
+      id: "blackspots-layer",
+      type: "circle",
+      source: "blackspots",
+      paint: {
+        // severity-based colors
+        "circle-color": [
+          "case",
+          [">=", ["get", "severity"], 4], "#ff0000",   // 🔴 very high risk
+          ["==", ["get", "severity"], 3], "#ff8800",   // 🟠 medium risk
+          "#00cc44"                                    // 🟢 low risk
+        ],
+        "circle-radius": 8,
+        "circle-opacity": 0.9,
+      },
+    });
+
+    // Popup on click
+    map.on("click", "blackspots-layer", (e: any) => {
+      const props = e.features[0].properties;
+      const [lng, lat] = e.features[0].geometry.coordinates;
+
+      new mapboxgl.Popup()
+        .setLngLat([lng, lat])
+        .setHTML(`
+          <b>${props.name}</b><br/>
+          Severity: <strong>${props.severity}</strong>
+        `)
+        .addTo(map);
+    });
+
+    setInfoMsg("Heatmap + Blackspots Loaded ✔");
+  } catch (err) {
+    setInfoMsg("❌ Error loading map data");
+  }
+});
+
   }, []);
 
   // -------- ROUTE HANDLER ----------
