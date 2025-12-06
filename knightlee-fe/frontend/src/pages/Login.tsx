@@ -24,7 +24,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#CCF5E9] to-[#E9FFF7]">
-      <Navbar />
+      
 
       <div className="flex items-center justify-center min-h-[calc(100vh-100px)] px-6 py-10">
         <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">

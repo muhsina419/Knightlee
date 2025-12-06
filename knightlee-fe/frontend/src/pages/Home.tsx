@@ -44,7 +44,7 @@ export default function Home() {
         </p>
 
         {/* CTA Button → Map */}
-        <a href="/mapscreen">
+        <a href="/map">
           <button className="mt-8 bg-[#009c6a] text-white px-10 py-4 rounded-full shadow-xl text-lg font-semibold hover:bg-[#008458] transition-all">
             Start Safe Navigation
           </button>

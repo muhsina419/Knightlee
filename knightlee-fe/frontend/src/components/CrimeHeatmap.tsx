@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import { Link } from "react-router-dom";
 
 // ✅ Mapbox token — make sure you have VITE_MAPBOX_TOKEN in your .env
 // .env.local →  VITE_MAPBOX_TOKEN=pk.eyJ1Ijoi.... (your token)
@@ -230,12 +231,52 @@ const CrimeHeatmap: React.FC = () => {
       </div>
     );
   }
+  // Highlight active route link
+const isActive = (path: string) => window.location.pathname === path;
+
+// Logout function
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  window.location.href = "/login"; // redirect to login page
+};
 
   return (
-    <div
-      ref={mapContainerRef}
-      style={{ width: "100%", height: "600px", borderRadius: "12px" }}
-    />
+     <>
+      {/* Navbar */}
+      <nav className="sticky top-0 z-50 bg-white border-b shadow-sm py-4 px-6">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <Link to="/home" className="text-2xl font-bold text-green-700">
+            🛡 Knightlee
+          </Link>
+
+          <div className="flex gap-8 text-lg font-semibold">
+            <Link
+              to="/heatmap"
+              className={`${
+                isActive("/heatmap") ? "text-green-600" : "text-gray-600 hover:text-black"
+              }`}
+            >
+              Heatmap
+            </Link>
+
+            <button
+              onClick={handleLogout}
+              className="text-red-500 hover:text-red-800"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Map */}
+      <div
+        ref={mapContainerRef}
+        className="w-full h-[600px] rounded-xl shadow-xl mt-4"
+      ></div>
+
+     
+    </>
   );
 };
 

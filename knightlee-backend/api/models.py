@@ -20,6 +20,9 @@ class Incident(models.Model):
         ("accident", "Accident"),
         ("dark_area", "Dark Area"),
         ("stray_dogs", "Stray Dogs"),
+        ("vandalism", "Vandalism"),
+        ("suspicious_activity", "Suspicious Activity"),
+        ("other", "Other"),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
