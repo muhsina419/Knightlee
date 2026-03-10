@@ -37,10 +37,10 @@
 ![System Architecture Diagram](architecture_diagram.png)
 
 ### Team Details
-- **Abhinand:** Project Lead & Developer
-- **Muhsina:** Backend Developer
-- **Team Member 3:** Frontend Developer
-- **Team Member 4:** UI/UX Designer
+- **Abhinandana:** Project Lead & Developer
+- **Muhsina Beegum:** Backend Developer
+- **Akshaya M K:** Frontend Developer
+
 
 ## Conclusion
 This documentation provides an overview of the Knightlee project's features, tech stack, installation instructions, system architecture details, and team members. For further details, refer to specific sections or contact the team.
